@@ -1,0 +1,24 @@
+.row img{
+	margin: 10px;
+	opacity: 0.3
+}
+
+.row ul{
+	list-style: outside none none;
+}
+.row ul li{
+	float: left;
+	width: 18.75%;
+	padding-left: 1.5625%;
+	padding-right: 1.5625%;
+	margin-left: 3.125%;
+	height: 250px;
+}
+.row ul li div{
+	text-align:center;
+}
+h6{
+	overflow: hidden;
+	text-align: center;
+	margin-left: 10px;
+}

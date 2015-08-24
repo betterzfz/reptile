@@ -1,0 +1,39 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "jquery/jquery.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "mongoose/mongoose.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "node/node.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "bluebird/bluebird.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "cheerio/cheerio.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "underscore/underscore.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "request/request.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "form-data/form-data.d.ts": {
+      "commit": "2682013bead455beb88f81051597ab6528f3d62f"
+    },
+    "bootstrap/bootstrap.d.ts": {
+      "commit": "8f081073e6cb416f901b272810d8b04d6e01c9e0"
+    },
+    "bootstrap.paginator/bootstrap.paginator.d.ts": {
+      "commit": "8f081073e6cb416f901b272810d8b04d6e01c9e0"
+    }
+  }
+}
