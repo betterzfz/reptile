@@ -2,17 +2,17 @@ var express = require('express');
 var path = require('path')
 var app = express();
 var swig = require('swig');
-var Image = require('./models/image');
-console.log('正在配置请求');
+var Image = require('./models/image'); //图片模型
+
 app.engine('html',swig.renderFile);
 app.set('view engine','html');
 app.set('views',__dirname+'/views');
 app.set('view cache', false);
 swig.setDefaults({ cache: false });
 app.use(express.static('public'));
-console.log('正在准备查询');
+
 app.get('/', function (req, res) {
-    console.log('配置查询参数');
+    
     var page = {limit:20,num:1};
     console.log(req.query);
     if(req.query.p){
@@ -38,6 +38,10 @@ app.get('/', function (req, res) {
             });
         }
     });
+});
+
+app.get('/start', function(req, res){
+    res.render('start');
 });
 
 app.listen(1337);
