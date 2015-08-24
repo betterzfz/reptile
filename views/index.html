@@ -12,19 +12,19 @@
         <div class="row">
             <ul>
                 {% for image in images %}
-                <li>
-                    <div>
-                        <img src="./images/{{ image.name }}" class="img-responsive img-thumbnail" data-toggle="tooltip" data-placement="left" title="{{ image.title }}" alt="Responsive image" />
-                    </div>
-                    <h6>{{ image.title }}</h6>
-                </li>
+                    <li>
+                        <div>
+                            <img src="./images/{{ image.name }}" class="img-responsive img-thumbnail" data-toggle="tooltip" data-placement="left" title="{{ image.title }}" alt="Responsive image" />
+                        </div>
+                        <h6>{{ image.title }}</h6>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
         <nav class="span12">
             <ul id="page1" pageCount="{{ page.pageCount }}" pageNum="{{ page.num }}" pageSize="{{ page.size }}" pageLimit="{{ page.limit }}" numberOfPages="{{ page.numberOf }}"></ul>
         </nav>
-      </div>
+    </div>
 {% endblock %}
 
 {% block foot %}
