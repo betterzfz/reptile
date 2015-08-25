@@ -1,0 +1,22 @@
+{
+  "name": "reptile",
+  "version": "1.0.0",
+  "description": "一个可以抓取图片的项目",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betterzfz/reptile.git"
+  },
+  "keywords": [
+    "reptile"
+  ],
+  "author": "stone",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/betterzfz/reptile/issues"
+  },
+  "homepage": "https://github.com/betterzfz/reptile#readme"
+}

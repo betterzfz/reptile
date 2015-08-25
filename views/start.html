@@ -9,7 +9,25 @@
 
 {% block content %}
     <div class="container">
-        
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="url" class="col-sm-2 control-label">链接</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="url" id="url" placeholder="链接">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="category" class="col-sm-2 control-label">分类</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="category" id="category" placeholder="分类">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">开始抓取</button>
+                </div>
+            </div>
+        </form>
     </div>
 {% endblock %}
 
