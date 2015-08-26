@@ -8,18 +8,21 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
+    <div class="container body-to-head">
         <form class="form-horizontal">
             <div class="form-group">
-                <label for="url" class="col-sm-2 control-label">链接</label>
+                <label for="url" class="col-sm-2 control-label">类型</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="url" id="url" placeholder="链接">
+                    <select class="form-control">
+                        <option value="0">链接</option>
+                        <option value="1">分类</option>
+                    </select>
                 </div>
             </div>
             <div class="form-group">
-                <label for="category" class="col-sm-2 control-label">分类</label>
+                <label for="info" class="col-sm-2 control-label">信息</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="category" id="category" placeholder="分类">
+                    <input type="text" class="form-control" name="info" id="info" placeholder="信息">
                 </div>
             </div>
             <div class="form-group">
@@ -33,5 +36,5 @@
 
 {% block foot %}
     {% parent %}
-    <script src="./js/index.js"></script>
+    <script src="./js/start.js"></script>
 {% endblock %}
