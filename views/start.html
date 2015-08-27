@@ -1,7 +1,5 @@
 {% extends 'layout.html' %}
 
-{% block title %}设置页{% endblock %}
-
 {% block head %}
     {% parent %}
     <link href="./css/start.css" rel="stylesheet">
@@ -9,11 +7,11 @@
 
 {% block content %}
     <div class="container body-to-head">
-        <form class="form-horizontal">
+        <form class="form-horizontal" action="/reptile">
             <div class="form-group">
                 <label for="url" class="col-sm-2 control-label">类型</label>
                 <div class="col-sm-10">
-                    <select class="form-control">
+                    <select class="form-control" name="type" id="type">
                         <option value="0">链接</option>
                         <option value="1">分类</option>
                     </select>
@@ -23,6 +21,21 @@
                 <label for="info" class="col-sm-2 control-label">信息</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="info" id="info" placeholder="信息">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="num" class="col-sm-2 control-label">数量</label>
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" name="num" id="num" placeholder="数量">
+                </div>
+            </div>
+            <div class="form-group" id="way">
+                <label for="url" class="col-sm-2 control-label">方式</label>
+                <div class="col-sm-10">
+                    <select class="form-control" name="way">
+                        <option value="0">深度</option>
+                        <option value="1">广度</option>
+                    </select>
                 </div>
             </div>
             <div class="form-group">

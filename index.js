@@ -14,12 +14,12 @@ app.use(express.static('public'));
 app.get('/', function (req, res) {
     
     var page = {limit:20,num:1};
-    console.log(req.query);
+
     if(req.query.p){
         page.num = req.query.p < 1 ? 1 : req.query.p;
     }
     
-    Image.find().sort('_id').skip(page['num'] * page['limit'] - page['limit']).limit(page['limit']).exec(function(err,results){
+    Image.find().sort('_id').skip(page.num * page.limit - page.limit).limit(page.limit).exec(function(err,results){
         if(err){
             console.log(err);
         } else {
@@ -27,13 +27,11 @@ app.get('/', function (req, res) {
                 if(error){
                     console.log(error);
                 } else {
-                    var pageCount = Math.ceil(count / page['limit']);
-                    page['pageCount'] = pageCount;
-                    page['size'] = results.length;
-                    page['numberOf'] = pageCount > 5 ? 5 : pageCount;
-                    res.render('index',{images:results,page:page});
-                                        
-                    
+                    var pageCount = Math.ceil(count / page.limit);
+                    page.pageCount = pageCount;
+                    page.size = results.length;
+                    page.numberOf = pageCount > 5 ? 5 : pageCount;
+                    res.render('index', { images : results, page : page, name : 'index', title : '展示页' });                
                 }
             });
         }
@@ -41,7 +39,47 @@ app.get('/', function (req, res) {
 });
 
 app.get('/start', function(req, res){
-    res.render('start');
+    res.render('start', { name : 'start', title : '设置页' });
+});
+
+app.get('/reptile', function(req, res){
+    console.log(req.query.type);
+    console.log(req.query.info);
+    console.log(req.query.num);
+    console.log(req.query.way);
+    var promisePool = require('promise-pool');
+    if(req.query.type == 0){
+        var Page = require('./module/page');
+        var page = new Page();
+        var pool = new promisePool.Pool(function (url, index) {
+
+            return page.getPage(url)
+                    .then(function(){
+                        console.log(url + ': 获取成功！');
+                    })
+                    .catch(function(err){
+                        console.log(url + ': 获取失败！');
+                    });
+            
+        }, 5);
+        
+        pool.retries = 5;
+        pool.add(req.query.info);
+        
+        pool.start(onProgress).then(function(result) {
+            console.log('完成 ' + result.total + ' 个任务.');
+        });
+        
+        function onProgress(progress) {
+            if (progress.success) {
+                console.log(progress.fulfilled + '/' + progress.total);
+            } else {
+                console.log('任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
+            }
+        }
+    }
+    
+    res.render('reptile', { name : 'reptile', title : '进度页' });
 });
 
 app.listen(1337);
