@@ -36,7 +36,7 @@
                     <ul class="nav navbar-nav">
                         <li {% if name == 'index' %}class="active"{% endif %}><a href="/">展示页</a></li>
                         <li {% if name == 'start' %}class="active"{% endif %}><a href="/start">设置页</a></li>
-                        {% if name == 'reptile' %}<li class="active"><a href="#">进度页</a></li>{% endif %}
+                        <li {% if name == 'reptile' %}class="active"{% endif %}><a href="/reptile">进度页</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div><!--/.container-fluid -->

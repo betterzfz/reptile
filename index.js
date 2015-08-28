@@ -52,15 +52,18 @@ app.get('/reptile', function(req, res){
         var Page = require('./module/page');
         var page = new Page();
         var pool = new promisePool.Pool(function (url, index) {
-
-            return page.getPage(url)
+            return new Promise(function (resolve, reject) {
+                page.getPage(url)
                     .then(function(data){
                         pool.add(data);
                         console.log(url + ': 获取成功！');
+                        return resolve('ok');
                     })
                     .catch(function(err){
                         console.log(url + ': 获取失败！');
+                        return reject('error');
                     });
+            });
             
         }, 5);
         

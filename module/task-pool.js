@@ -3,198 +3,95 @@
  *
  * By stone
  *
- */
-var Q = require('q-retry');
-/**
  * 用于管理并发事件的任务池
  */
+
+var Q = require('q-retry');
+
 var TaskPool = (function () {
     /**
      * 初始化一个人任务池.
-     * @参数 processor a function takes the data and index as parameters and returns a promise.
-     * @参数 concurrency the concurrency of this task pool.
-     * @参数 endless defaults to false. indicates whether this task pool is endless, if so, tasks can still be added even after all previous tasks have been fulfilled.
-     * @参数 tasksData an initializing array of task data.
+     * @参数 maxcur 同时进行任务数
+     * @参数 call 一个对任务进行操作的方法。
      */
-    function Pool(processor, concurrency, endless, tasksData) {
-        if (endless === void 0) { endless = false; }
-        this._tasksData = [];
-        /**
-         * (get) the number of successful tasks.
-         */
-        this.fulfilled = 0;
-        /**
-         * (get) the number of failed tasks.
-         */
-        this.rejected = 0;
-        /**
-         * (get) the number of pending tasks.
-         */
-        this.pending = 0;
-        /**
-         * (get) the number of completed tasks and pending tasks in total.
-         */
-        this.total = 0;
-        /**
-         * (get/set) defaults to 0, the number or retries that this task pool will take for every single task, could be Infinity.
-         */
-        this.retries = 0;
-        /**
-         * (get/set) defaults to 0, interval (milliseconds) between each retries.
-         */
-        this.retryInterval = 0;
-        /**
-         * (get/set) defaults to Infinity, max retry interval when retry interval multiplier applied.
-         */
-        this.maxRetryInterval = Infinity;
-        /**
-         * (get/set) defaults to 1, the multiplier applies to interval after every retry.
-         */
-        this.retryIntervalMultiplier = 1;
-        this._index = 0;
-        this._currentConcurrency = 0;
-        this._progressError = null;
-        this.concurrency = concurrency;
-        this.processor = processor;
-        this.endless = endless;
-        if (tasksData) {
-            this.add(tasksData);
-        }
+    function TaskPool(maxcur, call) {
+        this.tasks = []; //任务队列 
+
+        this.suNum = 0; //完成数
+
+        this.failNum = 0; //失败数
+
+        this.waitNum = 0; //等待进行的任务数
+        
+        this.totalNum = 0; //总任务数
+        
+        
+        this.index = 0; //当前任务索引
+        this.onTask = 0; //当前正在进行的任务数
+        
+        this.maxcur = maxcur;
+        this.call = call;
     }
-    Pool.prototype.add = function (tasksData) {
-        if (this._deferred && !this._deferred.promise.isPending()) {
-            console.warn('all the tasks have been accomplished, reset the pool before adding new tasks.');
-            return;
+    TaskPool.prototype.add = function (tasks) {
+        
+        if (!(tasks instanceof Array)) {
+            tasks = [tasks];
         }
-        if (!(tasksData instanceof Array)) {
-            tasksData = [tasksData];
-        }
-        this.total += tasksData.length;
-        this.pending += tasksData.length;
-        this._tasksData = this._tasksData.concat(tasksData);
-        this._start();
+        this.totalNum += tasks.length;
+        this.waitNum += tasks.length;
+        this.tasks = this.tasks.concat(tasks);
     };
-    /**
-     * start tasks, return a promise that will be fulfilled after all tasks accomplish if endless is false.
-     * @param onProgress a callback that will be triggered every time when a single task is fulfilled.
-     */
-    Pool.prototype.start = function (onProgress) {
-        if (this._deferred) {
-            if (this._pauseDeferred) {
-                console.warn('tasks pool has already been started, use resume to continue the tasks.');
-            }
-            else {
-                console.warn('tasks pool has already been started, reset it before start it again.');
+    
+    TaskPool.prototype.start = function () {
+        while (this.onTask < this.maxcur && this.tasks.length) {
+            this.onTask++;
+            this.deal(this.tasks.shift(), this.index++);
+        }
+    };
+    TaskPool.prototype.deal = function (task, index) {
+        var that = this;
+            that.call(task, index)
+                .then(function(){
+                    that.fulfilled++;
+                    that.waitNum--;
+                    that.next();
+                }).
+                catch(function(err){
+                    that.rejected++;
+                    that.waitNum--;
+                    that.next();
+                });
+    };
+    
+    TaskPool.prototype.next = function () {
+        this.onTask--;
+        if (this.pauseEvent) {
+            if (!this.onTask) {
+                this.pauseEvent.resolve(null);
             }
         }
         else {
-            this.onProgress = onProgress;
-            this._deferred = Q.defer();
-            this._start();
-        }
-        return this.endless ? null : this._deferred.promise;
-    };
-    Pool.prototype._start = function () {
-        if (this._checkProgressError()) {
-            return;
-        }
-        while (this._currentConcurrency < this.concurrency && this._tasksData.length) {
-            this._currentConcurrency++;
-            this._process(this._tasksData.shift(), this._index++);
-        }
-        if (!this.endless && !this._currentConcurrency) {
-            this._deferred.resolve({
-                total: this.total,
-                fulfilled: this.fulfilled,
-                rejected: this.rejected
-            });
+            this.start();
         }
     };
-    Pool.prototype._process = function (data, index) {
-        var _this = this;
-        Q.retry(function () {
-            return Q.invoke(_this, 'processor', data, index);
-        }, function (reason, retries) {
-            if (retries) {
-                _this._notifyProgress(index, false, reason, retries);
+    
+    // 暂停任务队列，当前正在进行的任务会进行完而不会被取消
+    TaskPool.prototype.pause = function () {
+        if (this.pauseEvent) {
+            if (!this.pauseEvent.promise.isPending()) {
+                console.warn('任务队列已经被暂停。');
             }
             else {
-                _this.rejected++;
-                _this.pending--;
-                _this._notifyProgress(index, false, reason, retries);
-                _this._next();
-            }
-        }, {
-            limit: this.retries,
-            interval: this.retryInterval,
-            maxInterval: this.maxRetryInterval,
-            intervalMultiplier: this.retryIntervalMultiplier
-        }).then(function () {
-            _this.fulfilled++;
-            _this.pending--;
-            _this._notifyProgress(index, true, null, null);
-            _this._next();
-        });
-    };
-    Pool.prototype._notifyProgress = function (index, success, err, retries) {
-        if (!this._progressError && typeof this.onProgress == 'function') {
-            var progress = {
-                success: success,
-                error: err,
-                retries: retries,
-                index: index,
-                fulfilled: this.fulfilled,
-                rejected: this.rejected,
-                pending: this.pending,
-                total: this.total
-            };
-            try {
-                this.onProgress(progress);
-            }
-            catch (e) {
-                this._progressError = e;
-            }
-        }
-    };
-    Pool.prototype._next = function () {
-        this._currentConcurrency--;
-        if (this._pauseDeferred) {
-            if (!this._currentConcurrency) {
-                this._pauseDeferred.resolve(null);
+                console.warn('任务队列暂停中。');
             }
         }
         else {
-            this._start();
-        }
-    };
-    Pool.prototype._checkProgressError = function () {
-        if (!this._progressError) {
-            return false;
-        }
-        if (this._deferred.promise.isPending()) {
-            this._deferred.reject(this._progressError);
-        }
-        return true;
-    };
-    /**
-     * pause tasks and return a promise that will be fulfilled after the running tasks accomplish. this will wait for running tasks to complete instead of aborting them.
-     */
-    Pool.prototype.pause = function () {
-        if (this._pauseDeferred) {
-            if (!this._pauseDeferred.promise.isPending()) {
-                console.warn('tasks have already been paused.');
-            }
-            else {
-                console.warn('tasks are already been pausing.');
+            this.pauseEvent = Q.defer();
+            if (!this.onTask) {
+                this.pauseEvent.resolve(null);
             }
         }
-        else {
-            this._pauseDeferred = Q.defer();
-            if (!this._currentConcurrency) {
-                this._pauseDeferred.resolve(null);
-            }
-        }
-        return this._pauseDeferred.promise;
+        return this.pauseEvent.promise;
     };
     /**
      * resume tasks.

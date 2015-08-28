@@ -1,9 +1,8 @@
-var bluebird = require('bluebird');
 var request = require('request');
 var promisePool = require('promise-pool');
 var nodeUrl = require('url');
 var uuid = require('node-uuid');
-var iconv = require('iconv-lite')
+var iconv = require('iconv-lite');
 var Image = require('../models/image');
 var Img = require('./img');
 var img = new Img();
@@ -54,20 +53,36 @@ Page.prototype.getPage = function (url) {
         },function(error, response, body) {  
             
             if (!error && response.statusCode == 200) {
-                if (body.indexOf('�') != -1) { //如果网页中有乱码则对其进行转码
-                    body = iconv.decode(body, 'gbk');
-                }
+                
                 var reg = /<a.+?href=('|")?([^'"]+)('|")?(?:\s+|>)/gim;
                 var imgReg = /<img [^>]*src=['"]([^'"]+)['"][^>]*alt=['"]([^'"]+)['"][^>]*>/gim;
                 var titleReg =  /<title>([^<]*)<\/title>/gim;
-                var encodeReg =  /<meta[^>]*charset=['"]?(.*)['"]?[^>]*><\/meta>/gim;
-                console.log(encodeReg.length)
+                /*var encodeReg =  /<meta[^>]*charset=['"]?([^"]*)['"]?[^>]*(\/>|<\/meta>)/gim;
+                var pageEncode = encodeReg.exec(body);
+                
+                //console.log(pageEncode);
+                if(pageEncode){
+                    //console.log(pageEncode[1]);
+                    //console.log(pageEncode[1].toLowerCase().indexOf('gb2312'));
+                    if (pageEncode[1].toLowerCase().indexOf('gb2312') != -1) { //如果网页中有乱码则对其进行转码
+                        //console.log(body);
+                        body = iconv.decode(body, 'gb2312');
+                        //console.log(body);
+                    } else if(pageEncode[1].toLowerCase().indexOf('gbk') != -1) {
+                        //console.log(body);
+                        body = iconv.decode(body, 'gbk');
+                        //console.log(body);
+                    }    
+                }*/
+                
                 var arr = [];
                 var tem;
                 var imgTem;
                 var imgArr = [];
                 var pageTitle = titleReg.exec(body);
+                
                 var urlObj = nodeUrl.parse(url);
+                
                 while (imgTem = imgReg.exec(body)) {
                     //如果图片名为空或者后缀不是图片则放弃该图片
                     if (imgTem[1].substr(imgTem[1].lastIndexOf('/') + 1) && ['.jpg', '.gif', 'png'].indexOf(imgTem[1].substr(imgTem[1].lastIndexOf('.'))) != -1 ) {
@@ -85,7 +100,7 @@ Page.prototype.getPage = function (url) {
                                 url: urlObj.protocol + '//' + urlObj.host + imgTem[1],
                                 name: uuid.v1() + imgTem[1].substr(imgTem[1].lastIndexOf('.')), //生成唯一图片名
                                 title: imgTem[2],
-                                source: pageTitle.length ? pageTitle[1] : ''
+                                source: pageTitle ? pageTitle[1] : ''
                             });
                         }
                     }
