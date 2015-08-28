@@ -22,6 +22,7 @@
   "dependencies": {
     "bluebird": "^2.9.34",
     "express": "^4.13.3",
+    "image-size": "^0.3.5",
     "mongoose": "^4.1.3",
     "promise-pool": "^0.1.9",
     "q": "^1.4.1",

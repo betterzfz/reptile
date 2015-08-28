@@ -54,7 +54,8 @@ app.get('/reptile', function(req, res){
         var pool = new promisePool.Pool(function (url, index) {
 
             return page.getPage(url)
-                    .then(function(){
+                    .then(function(data){
+                        pool.add(data);
                         console.log(url + ': 获取成功！');
                     })
                     .catch(function(err){
@@ -67,14 +68,14 @@ app.get('/reptile', function(req, res){
         pool.add(req.query.info);
         
         pool.start(onProgress).then(function(result) {
-            console.log('完成 ' + result.total + ' 个任务.');
+            console.log('完成 ' + result.total + ' 个页面任务.');
         });
         
         function onProgress(progress) {
             if (progress.success) {
                 console.log(progress.fulfilled + '/' + progress.total);
             } else {
-                console.log('任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
+                console.log('页面任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
             }
         }
     }
