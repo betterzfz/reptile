@@ -1,5 +1,5 @@
 /*
- * Task Pool v0.0.1
+ * 并发任务池 v0.0.1
  *
  * By stone
  *
@@ -8,13 +8,13 @@ var Q = require('q-retry');
 /**
  * 用于管理并发事件的任务池
  */
-var Pool = (function () {
+var TaskPool = (function () {
     /**
-     * initialize a task pool.
-     * @param processor a function takes the data and index as parameters and returns a promise.
-     * @param concurrency the concurrency of this task pool.
-     * @param endless defaults to false. indicates whether this task pool is endless, if so, tasks can still be added even after all previous tasks have been fulfilled.
-     * @param tasksData an initializing array of task data.
+     * 初始化一个人任务池.
+     * @参数 processor a function takes the data and index as parameters and returns a promise.
+     * @参数 concurrency the concurrency of this task pool.
+     * @参数 endless defaults to false. indicates whether this task pool is endless, if so, tasks can still be added even after all previous tasks have been fulfilled.
+     * @参数 tasksData an initializing array of task data.
      */
     function Pool(processor, concurrency, endless, tasksData) {
         if (endless === void 0) { endless = false; }

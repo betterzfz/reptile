@@ -2,6 +2,8 @@ var bluebird = require('bluebird');
 var request = require('request');
 var promisePool = require('promise-pool');
 var nodeUrl = require('url');
+var uuid = require('node-uuid');
+var iconv = require('iconv-lite')
 var Image = require('../models/image');
 var Img = require('./img');
 var img = new Img();
@@ -50,10 +52,16 @@ Page.prototype.getPage = function (url) {
                 'User-Agent': 'request'
             }
         },function(error, response, body) {  
+            
             if (!error && response.statusCode == 200) {
+                if (body.indexOf('�') != -1) { //如果网页中有乱码则对其进行转码
+                    body = iconv.decode(body, 'gbk');
+                }
                 var reg = /<a.+?href=('|")?([^'"]+)('|")?(?:\s+|>)/gim;
                 var imgReg = /<img [^>]*src=['"]([^'"]+)['"][^>]*alt=['"]([^'"]+)['"][^>]*>/gim;
                 var titleReg =  /<title>([^<]*)<\/title>/gim;
+                var encodeReg =  /<meta[^>]*charset=['"]?(.*)['"]?[^>]*><\/meta>/gim;
+                console.log(encodeReg.length)
                 var arr = [];
                 var tem;
                 var imgTem;
@@ -61,30 +69,35 @@ Page.prototype.getPage = function (url) {
                 var pageTitle = titleReg.exec(body);
                 var urlObj = nodeUrl.parse(url);
                 while (imgTem = imgReg.exec(body)) {
-                    if (imgTem[1].indexOf('http') == 0) {
-                        imgArr.push({
-                            url: imgTem[1],
-                            name: imgTem[1].substr(imgTem[1].lastIndexOf('/') + 1),
-                            title: imgTem[2],
-                            source: pageTitle[1]
-                        });
-                    } else {
-                        imgArr.push({
-                            url: urlObj.protocol + '//' + urlObj.host + imgTem[1],
-                            name: imgTem[1].substr(imgTem[1].lastIndexOf('/') + 1),
-                            title: imgTem[2],
-                            source: pageTitle[1]
-                        });
+                    //如果图片名为空或者后缀不是图片则放弃该图片
+                    if (imgTem[1].substr(imgTem[1].lastIndexOf('/') + 1) && ['.jpg', '.gif', 'png'].indexOf(imgTem[1].substr(imgTem[1].lastIndexOf('.'))) != -1 ) {
+                        
+                    
+                        if (imgTem[1].indexOf('http') == 0) { //图片路径以http开头则直接使用该图片路径
+                            imgArr.push({
+                                url: imgTem[1],
+                                name: uuid.v1() + imgTem[1].substr(imgTem[1].lastIndexOf('.')), //生成唯一图片名
+                                title: imgTem[2],
+                                source: pageTitle ? pageTitle[1] : ''
+                            });
+                        } else { //图片路径不是以http开头则分析访问地址并拼接出图片路径
+                            imgArr.push({
+                                url: urlObj.protocol + '//' + urlObj.host + imgTem[1],
+                                name: uuid.v1() + imgTem[1].substr(imgTem[1].lastIndexOf('.')), //生成唯一图片名
+                                title: imgTem[2],
+                                source: pageTitle.length ? pageTitle[1] : ''
+                            });
+                        }
                     }
                     
                 }
-                
-                imgPool.add(imgArr);
-                
-                imgPool.start(onImgProgress).then(function(result) {
-                    console.log('完成 ' + result.total + ' 个图片任务.');
-                });
-        
+                if (imgArr.length) { //如果有图片任务则添加到任务队列
+                    imgPool.add(imgArr);
+                    
+                    imgPool.start(onImgProgress).then(function(result) {
+                        console.log('完成 ' + result.total + ' 个图片任务.');
+                    });
+                }
                 while (tem = reg.exec(body)) {
                     if (tem[2].indexOf('http') == 0) {
                         arr.push(tem[2]);
