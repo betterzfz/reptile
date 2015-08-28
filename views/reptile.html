@@ -5,9 +5,87 @@
 {% endblock %}
 
 {% block content %}
+    <div class="container">
+        <div class="row">
+            <button class="btn btn-default" id="pause-resume" type="button">暂停</button>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">页面进度</div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                        <dt>已完成</dt><dd id="fulfilled">...</dd>
+                        <dt>已失败</dt><dd id="rejected">...</dd>
+                        <dt>待完成</dt><dd id="pending">...</dd>
+                        <dt>平均速度</dt><dd id="avg-speed">...</dd>
+                        <dt>总计</dt><dd id="total">...</dd>
+                    </dl>
+                </div>
+            </div>
+            
+            <div class="panel panel-default">
+                <div class="panel-heading">图片进度</div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                        <dt>已完成</dt><dd id="img-fulfilled">...</dd>
+                        <dt>已失败</dt><dd id="img-rejected">...</dd>
+                        <dt>待完成</dt><dd id="img-pending">...</dd>
+                        <dt>平均速度</dt><dd id="img-avg-speed">...</dd>
+                        <dt>总计</dt><dd id="img-total">...</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
     
 {% endblock %}
 
 {% block foot %}
     {% parent %}
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    var socket = io.connect('http://localhost:1337');
+    var start_time = (new Date()).getTime(); //开始时间
+    var end_time = "" ; //结束时间
+    socket.on('process', function (data) {
+        end_time = (new Date()).getTime();
+        
+        var time = (end_time - start_time)/1000;
+        
+        $('#fulfilled').html(data.fulfilled);
+        $('#rejected').html(data.rejected);
+        $('#pending').html(data.pending);
+        $('#avg-speed').html(data.fulfilled/time);
+        $('#total').html(data.total);
+        
+        $('#img-fulfilled').html(data.imgFulfilled);
+        $('#img-rejected').html(data.imgRejected);
+        $('#img-pending').html(data.imgPending);
+        $('#img-avg-speed').html(data.imgFulfilled/time);
+        $('#img-total').html(data.imgTotal);
+    });
+    
+    $('#pause-resume').click(function(){
+        $(this).attr('disabled','disabled');
+        if ($(this).html() == '暂停') {
+            $(this).html('暂停中...');
+            socket.emit('action',{action : 'pause'});
+        }else{
+            $(this).html('开始中...');
+            socket.emit('action',{action : 'resume'});
+        }
+    });
+    
+    socket.on('actionBack', function (data) {
+        if (data.data) {
+            if (data.action == 'pause') {
+                $('#pause-resume').html('开始');
+            } else {
+                $('#pause-resume').html('暂停');
+            }
+            $(this).removeAttr('disabled');
+        }
+    });
+    </script>
 {% endblock %}

@@ -7,7 +7,7 @@ var Image = require('../models/image');
 var Img = require('./img');
 var img = new Img();
 
-var imgPool = new promisePool.Pool(function (imgTask, index) {
+global.imgPool = new promisePool.Pool(function (imgTask, index) {
 
     return img.runImgTask(imgTask, 5)
             .then(function(){

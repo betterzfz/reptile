@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path')
 var app = express();
+var server = require('http').Server(app);
 var swig = require('swig');
 var Image = require('./models/image'); //图片模型
 
@@ -47,8 +48,10 @@ app.get('/reptile', function(req, res){
     console.log(req.query.info);
     console.log(req.query.num);
     console.log(req.query.way);
-    var promisePool = require('promise-pool');
+    var io = require('socket.io')(server);
+    
     if(req.query.type == 0){
+        var promisePool = require('promise-pool');
         var Page = require('./module/page');
         var page = new Page();
         var pool = new promisePool.Pool(function (url, index) {
@@ -73,9 +76,35 @@ app.get('/reptile', function(req, res){
         pool.start(onProgress).then(function(result) {
             console.log('完成 ' + result.total + ' 个页面任务.');
         });
-        
+        io.on('connection', function (socket) {
+            var interval = setInterval(function () {
+                socket.emit('process', {
+                    fulfilled: pool.fulfilled,
+                    rejected: pool.rejected,
+                    pending: pool.pending,
+                    total: pool.total,
+                    imgFulfilled: imgPool.fulfilled,
+                    imgRejected: imgPool.rejected,
+                    imgPending: imgPool.pending,
+                    imgTotal: imgPool.total
+                });
+            }, 1000);
+            socket.on("disconnect", function () {
+                clearInterval(interval);
+            });
+            socket.on("action", function (data) {
+                var result;
+                if (data.action == 'resume') {
+                    result = pool.resume();
+                } else {
+                    result = pool.pause();
+                }
+                socket.emit('actionBack', {action : data.action, data : result});
+            });
+        });
         function onProgress(progress) {
             if (progress.success) {
+                
                 console.log(progress.fulfilled + '/' + progress.total);
             } else {
                 console.log('页面任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
@@ -86,5 +115,6 @@ app.get('/reptile', function(req, res){
     res.render('reptile', { name : 'reptile', title : '进度页' });
 });
 
-app.listen(1337);
+server.listen(1337);
+
 console.log('listening 1337');
