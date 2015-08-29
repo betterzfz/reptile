@@ -46,8 +46,6 @@ app.get('/start', function(req, res){
 app.get('/reptile', function(req, res){
     console.log(req.query.type);
     console.log(req.query.info);
-    console.log(req.query.num);
-    console.log(req.query.way);
     var io = require('socket.io')(server);
     
     if(req.query.type == 0){
@@ -120,6 +118,42 @@ app.get('/reptile', function(req, res){
                 //console.log('页面任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
             }
         }
+    } else {
+        var Category = require('./module/category');
+        var category = new Category();
+        category.getCategoty(req.query.info, req.query.num);
+        io.on('connection', function (socket) {
+            var interval = setInterval(function () {
+                socket.emit('process', {
+                    imgFulfilled: imgPool.fulfilled,
+                    imgRejected: imgPool.rejected,
+                    imgPending: imgPool.pending,
+                    imgTotal: imgPool.total
+                });
+            }, 1000);
+            socket.on("disconnect", function () {
+                clearInterval(interval);
+            });
+            socket.on("action", function (data) {
+                console.log(data);
+                if (data.action == 'resume') {
+                    pool.
+                    resume();
+                        
+                    console.log(data.action);
+                    socket.emit('actionBack', {action : data.action, data : 'result'}); 
+                    
+                } else {
+                    pool.
+                    pause()
+                    .then(function(result){
+                        console.log(result);
+                        console.log(data.action);
+                        socket.emit('actionBack', {action : data.action, data : 'result'}); 
+                    });
+                }
+            });
+        });
     }
     
     res.render('reptile', { name : 'reptile', title : '进度页' });

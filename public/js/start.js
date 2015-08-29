@@ -1,8 +1,8 @@
 $('#type').change(function(){
 	var type_val = $(this).val();
 	if(type_val == 0){
-		$('#way').css('display','block');
+		$('#num').css('display','none');
 	} else {
-		$('#way').css('display','none');
+		$('#num').css('display','block');
 	}
 });
