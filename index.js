@@ -96,12 +96,11 @@ app.get('/reptile', function(req, res){
                 console.log(data);
                 if (data.action == 'resume') {
                     pool.
-                    resume()
-                    .then(function(result){
-                        console.log(result);
-                        console.log(data.action);
-                        socket.emit('actionBack', {action : data.action, data : 'result'}); 
-                    });
+                    resume();
+                        
+                    console.log(data.action);
+                    socket.emit('actionBack', {action : data.action, data : 'result'}); 
+                    
                 } else {
                     pool.
                     pause()

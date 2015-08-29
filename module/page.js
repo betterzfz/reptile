@@ -108,7 +108,6 @@ Page.prototype.getPage = function (url) {
                 }
                 if (imgArr.length) { //如果有图片任务则添加到任务队列
                     imgPool.add(imgArr);
-                    
                     /*imgPool.start(onImgProgress).then(function(result) {
                         console.log('完成 ' + result.total + ' 个图片任务.');
                     });*/
