@@ -59,23 +59,23 @@ app.get('/reptile', function(req, res){
                 page.getPage(url)
                     .then(function(data){
                         pool.add(data);
-                        console.log(url + ': 获取成功！');
+                        //console.log(url + ': 获取成功！');
                         return resolve('ok');
                     })
                     .catch(function(err){
-                        console.log(url + ': 获取失败！');
+                        //console.log(url + ': 获取失败！');
                         return reject('error');
                     });
             });
             
-        }, 5);
+        }, 5, true);
         
         pool.retries = 5;
         pool.add(req.query.info);
         
-        pool.start(onProgress).then(function(result) {
+        /*pool.start(onProgress).then(function(result) {
             console.log('完成 ' + result.total + ' 个页面任务.');
-        });
+        });*/
         io.on('connection', function (socket) {
             var interval = setInterval(function () {
                 socket.emit('process', {
@@ -93,21 +93,32 @@ app.get('/reptile', function(req, res){
                 clearInterval(interval);
             });
             socket.on("action", function (data) {
-                var result;
+                console.log(data);
                 if (data.action == 'resume') {
-                    result = pool.resume();
+                    pool.
+                    resume()
+                    .then(function(result){
+                        console.log(result);
+                        console.log(data.action);
+                        socket.emit('actionBack', {action : data.action, data : 'result'}); 
+                    });
                 } else {
-                    result = pool.pause();
+                    pool.
+                    pause()
+                    .then(function(result){
+                        console.log(result);
+                        console.log(data.action);
+                        socket.emit('actionBack', {action : data.action, data : 'result'}); 
+                    });
                 }
-                socket.emit('actionBack', {action : data.action, data : result});
             });
         });
         function onProgress(progress) {
             if (progress.success) {
                 
-                console.log(progress.fulfilled + '/' + progress.total);
+                //console.log(progress.fulfilled + '/' + progress.total);
             } else {
-                console.log('页面任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
+                //console.log('页面任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
             }
         }
     }

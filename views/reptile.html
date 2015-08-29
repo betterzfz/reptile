@@ -70,6 +70,7 @@
         $(this).attr('disabled','disabled');
         if ($(this).html() == '暂停') {
             $(this).html('暂停中...');
+            console.log(socket);
             socket.emit('action',{action : 'pause'});
         }else{
             $(this).html('开始中...');
@@ -78,6 +79,7 @@
     });
     
     socket.on('actionBack', function (data) {
+        console.log(data);
         if (data.data) {
             if (data.action == 'pause') {
                 $('#pause-resume').html('开始');

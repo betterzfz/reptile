@@ -94,34 +94,17 @@ var TaskPool = (function () {
         return this.pauseEvent.promise;
     };
     /**
-     * resume tasks.
+     * 重启任务
      */
-    Pool.prototype.resume = function () {
-        if (!this._pauseDeferred) {
-            console.warn('tasks are not paused.');
+    TaskPool.prototype.resume = function () {
+        if (!this.pauseEvent) {
+            console.warn('任务没有暂停');
             return;
         }
-        this._pauseDeferred = null;
-        this._start();
+        this.pauseEvent = null;
+        this.start();
     };
-    /**
-     * pause tasks, then clear pending tasks data and reset counters. return a promise that will be fulfilled after resetting accomplish.
-     */
-    Pool.prototype.reset = function () {
-        var _this = this;
-        return this.pause().then(function () {
-            _this.rejected = 0;
-            _this.fulfilled = 0;
-            _this.pending = 0;
-            _this.total = 0;
-            _this._index = 0;
-            _this._tasksData = [];
-            _this._deferred = null;
-            _this._pauseDeferred = null;
-            _this.onProgress = null;
-            _this._progressError = null;
-        });
-    };
-    return Pool;
+    
+    return TaskPool;
 })();
-exports.Pool = Pool;
+exports.TaskPool = TaskPool;

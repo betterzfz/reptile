@@ -45,7 +45,7 @@ Img.prototype.runImgTask = function (task, seconds) {
             return that.downloadOneImg(task, seconds);
         })
         .then(function (path) {
-            console.log('一张图片下载成功');
+            //console.log('一张图片下载成功');
             
             return helper.isValidImg(path);
         });

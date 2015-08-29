@@ -21,19 +21,19 @@ global.imgPool = new promisePool.Pool(function (imgTask, index) {
                         console.log(err);
                     }
                 });
-                console.log(imgTask.name + ': 获取成功！');
+                //console.log(imgTask.name + ': 获取成功！');
             })
             .catch(function(err){
-                console.log(imgTask.name + ': 获取失败！');
+                //console.log(imgTask.name + ': 获取失败！');
             });
     
-}, 20);
+}, 20, true);
 
 function onImgProgress(progress) {
     if (progress.success) {
-        console.log(progress.fulfilled + '/' + progress.total);
+        //console.log(progress.fulfilled + '/' + progress.total);
     } else {
-        console.log('图片任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
+        //console.log('图片任务 ' + progress.index + ' 因为 ' + (progress.error ? progress.error.message : '没有错误') + ' 而失败, 还可以进行 ' + progress.retries + '次');
     }
 }
 
@@ -109,9 +109,9 @@ Page.prototype.getPage = function (url) {
                 if (imgArr.length) { //如果有图片任务则添加到任务队列
                     imgPool.add(imgArr);
                     
-                    imgPool.start(onImgProgress).then(function(result) {
+                    /*imgPool.start(onImgProgress).then(function(result) {
                         console.log('完成 ' + result.total + ' 个图片任务.');
-                    });
+                    });*/
                 }
                 while (tem = reg.exec(body)) {
                     if (tem[2].indexOf('http') == 0) {
