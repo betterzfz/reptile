@@ -121,7 +121,27 @@ app.get('/reptile', function(req, res){
     } else {
         var Category = require('./module/category');
         var category = new Category();
-        category.getCategoty(req.query.info, req.query.num);
+        
+        
+        /*var promisePool = require('promise-pool');
+        var num = req.query.num > 60 ? 60 : req.query.num;
+        var cateData = {keyword : req.query.info, page : 1};
+        var pool = new promisePool.Pool(function (cateData, index) {
+            return new Promise(function (resolve, reject) {
+                category.getCategoty(cateData.keyword, cateData.page)
+                        .then(function(){
+                            pool.add();
+                        })
+                        .catch(function(err){
+                            return reject('error');
+                        });
+            });
+            
+        }, 5, true);*/
+        
+        
+        
+        category.getCategoty(req.query.info, req.query.num, 1);
         io.on('connection', function (socket) {
             var interval = setInterval(function () {
                 socket.emit('process', {

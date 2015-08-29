@@ -41,12 +41,12 @@ imgPool.retries = 5;
 var Category = function () {
 };
 
-Category.prototype.getCategoty = function (info, num) {
+Category.prototype.getCategoty = function (info, num, page) {
     
     return new Promise(function (resolve, reject) {
         
         request({  
-            url: 'http://image.baidu.com/i?tn=baiduimagejson&ct=201326592&cl=2&lm=-1&st=-1&fm=result&fr=&sf=1&fmq=1349413075627_R&pv=&ic=0&nc=1&z=&se=1&showtab=0&fb=0&width=&height=&face=0&istype=2&word=' + encodeURIComponent(info) + '&rn=' + num + '&pn=1',
+            url: 'http://image.baidu.com/i?tn=baiduimagejson&ct=201326592&cl=2&lm=-1&st=-1&fm=result&fr=&sf=1&fmq=1349413075627_R&pv=&ic=0&nc=1&z=&se=1&showtab=0&fb=0&width=&height=&face=0&istype=2&word=' + encodeURIComponent(info) + '&rn=' + num + '&pn=' + page,
             headers: {
                 'User-Agent': 'request'
             }
