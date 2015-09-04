@@ -18,7 +18,7 @@ declare module "mongoose" {
 
   function get(key: string): any;
   function set(key: string, value: any): void;
-
+  
   var mongo: any;
   var mquery: any;
   var version: string;

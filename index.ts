@@ -1,10 +1,9 @@
-import express = require('express');
-import swig = require('swig');
+import * as express from 'express';
+import * as swig from 'swig';
+import Image from './models/image';
 
-var app = express();
-var server = require('http').Server(app);
-
-var Image = require('./models/image'); //图片模型
+let app = express();
+let server = require('http').Server(app);
 
 app.engine('html',swig.renderFile);
 app.set('view engine','html');
@@ -13,30 +12,29 @@ app.set('view cache', false);
 swig.setDefaults({ cache: false });
 app.use(express.static('public'));
 
-app.get('/', function (req, res) {
+// 分页参数接口
+interface Paging{
+    limit: number;
+    num: number;
+    pageCount?: number;
+    size?: number;
+    numberOf?: number;
+}
+
+app.get('/', function (req: express.Request, res: express.Response) {
     
-    var page = {limit:20,num:1};
+    // 分页参数
+    let page: Paging = {
+        limit:20,
+        num:1
+    };
 
     if(req.query.p){
         page.num = req.query.p < 1 ? 1 : req.query.p;
     }
     
-    Image.find().sort('_id').skip(page.num * page.limit - page.limit).limit(page.limit).exec(function(err,results){
-        if(err){
-            console.log(err);
-        } else {
-            Image.count({},function(error, count){
-                if(error){
-                    console.log(error);
-                } else {
-                    var pageCount = Math.ceil(count / page.limit);
-                    page.pageCount = pageCount;
-                    page.size = results.length;
-                    page.numberOf = pageCount > 5 ? 5 : pageCount;
-                    res.render('index', { images : results, page : page, name : 'index', title : '展示页' });                
-                }
-            });
-        }
+    Image.findByPage(page).sort('_id').skip(page.num * page.limit - page.limit).limit(page.limit).exec(function(err,results){
+        res.render('index', { images : results, page : page, name : 'index', title : '展示页' });
     });
 });
 
@@ -181,5 +179,5 @@ app.get('/reptile', function(req, res){
 });
 
 server.listen(1337);
-
+console.log(Image);
 console.log('listening 1337');
