@@ -1,6 +1,8 @@
 import * as express from 'express';
 import * as swig from 'swig';
-import Image from './models/image';
+import * as socket from 'socket.io';
+import * as promisePool from 'promise-pool';
+import {default as Image} from './models/image';
 
 let app = express();
 let server = require('http').Server(app);
@@ -33,22 +35,26 @@ app.get('/', function (req: express.Request, res: express.Response) {
         page.num = req.query.p < 1 ? 1 : req.query.p;
     }
     
-    Image.findByPage(page).sort('_id').skip(page.num * page.limit - page.limit).limit(page.limit).exec(function(err,results){
+    let query = Image.find({});
+    query.sort('_id');
+    query.limit(page.limit);
+    query.skip(page.num * page.limit - page.limit);
+    query.exec(function (err,results) {
         res.render('index', { images : results, page : page, name : 'index', title : '展示页' });
     });
+    
 });
 
-app.get('/start', function(req, res){
+app.get('/start', function (req: express.Request, res: express.Response) {
     res.render('start', { name : 'start', title : '设置页' });
 });
 
-app.get('/reptile', function(req, res){
-    console.log(req.query.type);
-    console.log(req.query.info);
-    var io = require('socket.io')(server);
+app.get('/reptile', function (req: express.Request, res: express.Response) {
+    
+    
+    let io: SocketIO.Server = socket(server);
     
     if(req.query.type == 0){
-        var promisePool = require('promise-pool');
         var Page = require('./module/page');
         var page = new Page();
         var pool = new promisePool.Pool(function (url, index) {
