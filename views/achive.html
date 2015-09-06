@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    {% parent %}
+{% endblock %}
+
+{% block content %}
+    <div class="alert alert-success" role="alert">
+        完成了一下文件的打包：<br/>
+        {% for image in images %}
+        {{ image }}<br/>
+        {% endfor %}
+	   <br/><a href="/list" class="alert-link">点击返回列表页</a>
+	</div>
+{% endblock %}
+
+{% block foot %}
+    {% parent %}
+{% endblock %}

@@ -2,12 +2,17 @@ import * as express from 'express';
 import * as swig from 'swig';
 import * as socket from 'socket.io';
 import * as promisePool from 'promise-pool';
+import * as archiver from 'archiver';
+import * as fs from 'fs';
 import {default as Image} from './models/image';
 import Page from './module/page';
 import Category from './module/category';
 
-let app = express();
+let app: express.Express = express();
 let server = require('http').Server(app);
+
+let bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.engine('html',swig.renderFile);
 app.set('view engine','html');
@@ -233,23 +238,84 @@ app.get('/list', function (req: express.Request, res: express.Response) {
     
     let query = Image.find({});
     query.sort('_id');
-    query.limit(page.limit);
-    query.skip(page.num * page.limit - page.limit);
+    console.log(req.query.paging == 'false');
+    if (req.query.paging != 'true') {
+        query.limit(page.limit);
+        query.skip(page.num * page.limit - page.limit);    
+    }
     query.exec(function (err: any,results: Document[]) {
         Image.count({},function (error: any, count: number) {
             if (error) {
                 console.log(error);
             } else {
+                console.log(req.query.paging == 'true');
+                if (req.query.paging == 'true') {
+                    page.limit = count;
+                }
                 let pageCount = Math.ceil(count / page.limit);
                 page.pageCount = pageCount;
                 page.size = results.length;
                 page.numberOf = pageCount > 5 ? 5 : pageCount;
-                console.log(results);
-                res.render('list', { images : results, page : page, name : 'list', title : '展示页' });    
+                
+                res.render('list', { images : results, page : page, name : 'list', title : '展示页', paging: req.query.paging });    
             }
         });
     });
     
+});
+
+app.post('/achive', function (req: express.Request, res: express.Response) {
+    
+    let imagesArr: string[] = []
+    for (let i = 0; i < req.body.images.length; i++) {
+        imagesArr.push('./public/images/' + req.body.images[i]);
+    }
+   
+    var zipPath = 'images.zip';
+    //创建一最终打包文件的输出流
+    var output = fs.createWriteStream(zipPath);
+    //生成archiver对象，打包类型为zip
+    var zipArchiver = archiver('zip');
+    //将打包对象与输出流关联
+    zipArchiver.pipe(output);
+    for(let i=0; i < imagesArr.length; i++) {
+        console.log(imagesArr[i]);
+        //将被打包文件的流添加进archiver对象中
+        zipArchiver.append(fs.createReadStream(imagesArr[i]), {'name': req.body.images[i]});
+    }
+    //打包
+    zipArchiver.finalize();
+    
+    res.render('achive', { images : imagesArr, title : '打包页' });
+});
+
+app.get('/delete', function (req: express.Request, res: express.Response) {
+    
+    let name: string = req.query.name;
+    
+    Image.remove({name: name}, function (err) {
+        fs.unlink('./public/images/' + name, function (error) {
+            res.render('delete', { name : name, err: err || error, title : '删除页' }); 
+        });
+    });
+});
+
+app.get('/drop', function (req: express.Request, res: express.Response) {
+    
+    Image.remove({}, function (err) {
+        let folder_exists: boolean = fs.existsSync('./public/images');
+        
+        if (folder_exists == true) {
+            let dirList = fs.readdirSync('./public/images');
+            
+            dirList.forEach(function (fileName) {
+                fs.unlinkSync('./public/images' + fileName);
+            });
+        }
+        
+        res.render('drop', { err: err, title : '删除页' }); 
+        
+    });
 });
 
 server.listen(1337);

@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/betterzfz/reptile#readme",
   "dependencies": {
+    "archiver": "^0.15.0",
     "bluebird": "^2.9.34",
+    "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "file-type": "^2.10.2",
     "iconv-lite": "^0.4.11",

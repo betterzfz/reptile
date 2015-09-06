@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    {% parent %}
+{% endblock %}
+
+{% block content %}
+    <div class="alert alert-success" role="alert">
+        {% if err %}
+        数据文件：{{ name }}删除失败！<br/>
+        {% else %}
+        完成了数据文件：{{ name }}的删除！<br/>
+        {% endif %}
+	   <br/><a href="/list" class="alert-link">点击返回列表页</a>
+	</div>
+{% endblock %}
+
+{% block foot %}
+    {% parent %}
+{% endblock %}

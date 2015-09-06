@@ -8,7 +8,26 @@
 {% block content %}
     <div class="container">
         <div class="row action">
-            <button type="button" class="btn btn-default" id="archive">打包</button>
+            <div class="col-md-1">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="select-all">全选
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" id="un-paging" {% if paging == 'true' %}checked{% endif %}>不分页
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-default" id="archive">打包</button>
+            </div>
+            <div class="col-md-1">
+                <button type="button" class="btn btn-default" id="drop">清空</button>
+            </div>
         </div>
         <div class="row">
             <div class="table-responsive">
@@ -22,19 +41,21 @@
                         <td>添加时间</td>
                         <td>操作</td>
                     </tr>
+                    <form action="/achive" method="post" id="form">
                     {% for image in images %}
                         <tr>
-                            <td><input type="checkbox" name="images" data="{{ image.name }}" /></td>
+                            <td><input type="checkbox" name="images" data="{{ image.name }}" value="{{ image.name }}" /></td>
                             <td>{{ loop.index }}</td>
                             <td><img src="./images/{{ image.name }}" class="img-responsive img-thumbnail" data-toggle="tooltip" data-placement="left" title="{{ image.title }}" alt="Responsive image" style="width:30%" /></td>
                             <td>{{ image.title }}</td>
                             <td>{{ image.source }}</td>
                             <td>{{ image.create_date|date('Y-m-d H:i:s',-8*60) }}</td>
                             <td>
-                                <button type="button" class="btn btn-default">删除</button>
+                                <button type="button" class="btn btn-default delete-image" data="{{ image.name }}">删除</button>
                             </td>
                         </tr>
                     {% endfor %}
+                    </form>
                 </table>
             </div>
         </div>

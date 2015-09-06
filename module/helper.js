@@ -197,6 +197,7 @@ var Helper = (function () {
                     return resolve(false);
                 }
                 else {
+                    fs.unlinkSync(file);
                     return reject('图片尺寸不合法');
                 }
             });

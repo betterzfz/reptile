@@ -2,11 +2,15 @@ var express = require('express');
 var swig = require('swig');
 var socket = require('socket.io');
 var promisePool = require('promise-pool');
+var archiver = require('archiver');
+var fs = require('fs');
 var image_1 = require('./models/image');
 var page_1 = require('./module/page');
 var category_1 = require('./module/category');
 var app = express();
 var server = require('http').Server(app);
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
@@ -179,22 +183,69 @@ app.get('/list', function (req, res) {
     }
     var query = image_1.default.find({});
     query.sort('_id');
-    query.limit(page.limit);
-    query.skip(page.num * page.limit - page.limit);
+    console.log(req.query.paging == 'false');
+    if (req.query.paging != 'true') {
+        query.limit(page.limit);
+        query.skip(page.num * page.limit - page.limit);
+    }
     query.exec(function (err, results) {
         image_1.default.count({}, function (error, count) {
             if (error) {
                 console.log(error);
             }
             else {
+                console.log(req.query.paging == 'true');
+                if (req.query.paging == 'true') {
+                    page.limit = count;
+                }
                 var pageCount = Math.ceil(count / page.limit);
                 page.pageCount = pageCount;
                 page.size = results.length;
                 page.numberOf = pageCount > 5 ? 5 : pageCount;
-                console.log(results);
-                res.render('list', { images: results, page: page, name: 'list', title: '展示页' });
+                res.render('list', { images: results, page: page, name: 'list', title: '展示页', paging: req.query.paging });
             }
         });
+    });
+});
+app.post('/achive', function (req, res) {
+    var imagesArr = [];
+    for (var i = 0; i < req.body.images.length; i++) {
+        imagesArr.push('./public/images/' + req.body.images[i]);
+    }
+    var zipPath = 'images.zip';
+    //创建一最终打包文件的输出流
+    var output = fs.createWriteStream(zipPath);
+    //生成archiver对象，打包类型为zip
+    var zipArchiver = archiver('zip');
+    //将打包对象与输出流关联
+    zipArchiver.pipe(output);
+    for (var i = 0; i < imagesArr.length; i++) {
+        console.log(imagesArr[i]);
+        //将被打包文件的流添加进archiver对象中
+        zipArchiver.append(fs.createReadStream(imagesArr[i]), { 'name': req.body.images[i] });
+    }
+    //打包
+    zipArchiver.finalize();
+    res.render('achive', { images: imagesArr, title: '打包页' });
+});
+app.get('/delete', function (req, res) {
+    var name = req.query.name;
+    image_1.default.remove({ name: name }, function (err) {
+        fs.unlink('./public/images/' + name, function (error) {
+            res.render('delete', { name: name, err: err || error, title: '删除页' });
+        });
+    });
+});
+app.get('/drop', function (req, res) {
+    image_1.default.remove({}, function (err) {
+        var folder_exists = fs.existsSync('./public/images');
+        if (folder_exists == true) {
+            var dirList = fs.readdirSync('./public/images');
+            dirList.forEach(function (fileName) {
+                fs.unlinkSync('./public/images' + fileName);
+            });
+        }
+        res.render('drop', { err: err, title: '删除页' });
     });
 });
 server.listen(1337);
