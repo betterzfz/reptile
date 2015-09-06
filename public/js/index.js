@@ -14,8 +14,10 @@ $(function(){
 	
 	$('.row img').mouseover(function(){
 		$(this).css('opacity',1);
+		$(this).next().css('display','block');
 	}).mouseout(function(){
 		$(this).css('opacity',0.5);
+		$(this).next().css('display','none');
 	});
 
 })

@@ -19,3 +19,4 @@
 /// <reference path="socket.io/socket.io.d.ts" />
 /// <reference path="read-chunk/read-chunk.d.ts" />
 /// <reference path="file-type/file-type.d.ts" />
+/// <reference path="image-size/image-size.d.ts" />

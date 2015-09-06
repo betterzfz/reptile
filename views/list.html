@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    {% parent %}
+    <link href="./css/list.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row action">
+            <button type="button" class="btn btn-default" id="archive">打包</button>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <td>#</td>
+                        <td>序号</td>
+                        <td>缩略图</td>
+                        <td>标题</td>
+                        <td>来源</td>
+                        <td>添加时间</td>
+                        <td>操作</td>
+                    </tr>
+                    {% for image in images %}
+                        <tr>
+                            <td><input type="checkbox" name="images" data="{{ image.name }}" /></td>
+                            <td>{{ loop.index }}</td>
+                            <td><img src="./images/{{ image.name }}" class="img-responsive img-thumbnail" data-toggle="tooltip" data-placement="left" title="{{ image.title }}" alt="Responsive image" style="width:30%" /></td>
+                            <td>{{ image.title }}</td>
+                            <td>{{ image.source }}</td>
+                            <td>{{ image.create_date|date('Y-m-d H:i:s',-8*60) }}</td>
+                            <td>
+                                <button type="button" class="btn btn-default">删除</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <nav class="span12">
+            <ul id="page1" pageCount="{{ page.pageCount }}" pageNum="{{ page.num }}" pageSize="{{ page.size }}" pageLimit="{{ page.limit }}" numberOfPages="{{ page.numberOf }}"></ul>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block foot %}
+    {% parent %}
+    <script src="./js/bootstrap-paginator.min.js"></script>
+    <script src="./js/list.js"></script>
+{% endblock %}

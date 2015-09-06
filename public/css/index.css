@@ -1,12 +1,12 @@
-.row img{
+.row img {
 	margin: 10px;
 	opacity: 0.3
 }
 
-.row ul{
+.row ul {
 	list-style: outside none none;
 }
-.row ul li{
+.row ul li {
 	float: left;
 	width: 18.75%;
 	padding-left: 1.5625%;
@@ -14,11 +14,19 @@
 	margin-left: 3.125%;
 	height: 250px;
 }
-.row ul li div{
+.row ul li div {
 	text-align:center;
 }
-h6{
+h6 {
 	overflow: hidden;
 	text-align: center;
 	margin-left: 10px;
+}
+
+.info {
+    width: 220px;
+    display: none;
+    background: #FFF none repeat scroll 0% 0%;
+    font-size: 1.2em;
+    border-radius: 3px;
 }
