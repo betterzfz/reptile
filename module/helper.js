@@ -4,6 +4,7 @@ var bluebird = require('bluebird');
 var readChunk = require('read-chunk');
 var fileType = require('file-type');
 var sizeOf = require('image-size');
+var image_1 = require('../models/image');
 var Helper = (function () {
     function Helper() {
     }
@@ -14,6 +15,24 @@ var Helper = (function () {
                     return resolve(true);
                 else
                     return resolve(false);
+            });
+        });
+    };
+    ;
+    Helper.prototype.isDataExist = function (imageTask) {
+        return new bluebird(function (resolve, reject) {
+            image_1["default"].count({ origin: imageTask.url }, function (err, count) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    if (count == 0) {
+                        return resolve(false);
+                    }
+                    else {
+                        return resolve(true);
+                    }
+                }
             });
         });
     };

@@ -5,6 +5,7 @@ import * as bluebird from 'bluebird';
 import * as readChunk from 'read-chunk'; 
 import * as fileType from 'file-type';
 import * as sizeOf from 'image-size';
+import Image from '../models/image';
 
 // 图片任务接口
 interface ImageTask{
@@ -24,6 +25,22 @@ class Helper {
             fs.exists(file, function (exists) {
                 if (exists) return resolve(true);
                 else return resolve(false);
+            });
+        })
+    };
+    
+    isDataExist(imageTask: ImageTask) {
+        return new bluebird(function (resolve, reject) {
+            Image.count({origin: imageTask.url}, function(err: any, count: number){
+                if (err) {
+                    console.log(err);
+                } else {
+                    if (count == 0) {
+                        return resolve(false);
+                    } else {
+                        return resolve(true);
+                    }
+                }
             });
         })
     };

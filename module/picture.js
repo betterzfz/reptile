@@ -29,7 +29,7 @@ var Picture = (function () {
         var that = this;
         // 判断一个文件是不是已经存在，如果已经存在就抛错
         return helper
-            .isExist('./public/images/' + task.name)
+            .isDataExist(task)
             .then(function (isExists) {
             // 文件不存在 开始下载
             return that.downloadOneImg(task, seconds);
