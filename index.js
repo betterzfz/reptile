@@ -9,8 +9,20 @@ var page_1 = require('./module/page');
 var category_1 = require('./module/category');
 var app = express();
 var server = require('http').Server(app);
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
+/*let bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));*/
+var querystring = require('querystring');
+app.use('/achive', function (req, res, next) {
+    req.rawBody = '';
+    req.setEncoding('utf8');
+    req.on('data', function (chunk) {
+        req.rawBody += chunk;
+    });
+    req.on('end', function () {
+        req.rawBody = querystring.parse(req.rawBody);
+        next();
+    });
+});
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
@@ -211,9 +223,12 @@ app.get('/list', function (req, res) {
     });
 });
 app.post('/achive', function (req, res) {
+    //let rawImages = querystring.parse(req.rawBody);
+    //console.log(req.rawBody);
+    var rawImages = req.rawBody;
     var imagesArr = [];
-    for (var i = 0; i < req.body.images.length; i++) {
-        imagesArr.push('./public/images/' + req.body.images[i]);
+    for (var i = 0; i < rawImages.images.length; i++) {
+        imagesArr.push('./public/images/' + rawImages.images[i]);
     }
     var zipPath = 'images.zip';
     //创建一最终打包文件的输出流
@@ -225,7 +240,7 @@ app.post('/achive', function (req, res) {
     for (var i = 0; i < imagesArr.length; i++) {
         console.log(imagesArr[i]);
         //将被打包文件的流添加进archiver对象中
-        zipArchiver.append(fs.createReadStream(imagesArr[i]), { 'name': req.body.images[i] });
+        zipArchiver.append(fs.createReadStream(imagesArr[i]), { 'name': rawImages.images[i] });
     }
     //打包
     zipArchiver.finalize();

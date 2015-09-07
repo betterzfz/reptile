@@ -11,8 +11,23 @@ import Category from './module/category';
 let app: express.Express = express();
 let server = require('http').Server(app);
 
-let bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: true}));
+/*let bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}));*/
+import * as querystring from 'querystring';
+
+app.use('/achive', function(req: any, res, next) {
+    req.rawBody = '';
+    req.setEncoding('utf8');
+
+    req.on('data', function(chunk) {
+        req.rawBody += chunk;
+    });
+    
+    req.on('end', function() {
+        req.rawBody = querystring.parse(req.rawBody);
+        next();
+    });
+});
 
 app.engine('html',swig.renderFile);
 app.set('view engine','html');
@@ -267,24 +282,28 @@ app.get('/list', function (req: express.Request, res: express.Response) {
     
 });
 
-app.post('/achive', function (req: express.Request, res: express.Response) {
+app.post('/achive', function (req: any, res: express.Response) {
     
+    //let rawImages = querystring.parse(req.rawBody);
+    //console.log(req.rawBody);
+    let rawImages: {images: string[]} = req.rawBody;
+
     let imagesArr: string[] = []
-    for (let i = 0; i < req.body.images.length; i++) {
-        imagesArr.push('./public/images/' + req.body.images[i]);
+    for (let i = 0; i < rawImages.images.length; i++) {
+        imagesArr.push('./public/images/' + rawImages.images[i]);
     }
    
-    var zipPath = 'images.zip';
+    let zipPath: string = 'images.zip';
     //创建一最终打包文件的输出流
-    var output = fs.createWriteStream(zipPath);
+    let output: fs.WriteStream = fs.createWriteStream(zipPath);
     //生成archiver对象，打包类型为zip
-    var zipArchiver = archiver('zip');
+    let zipArchiver = archiver('zip');
     //将打包对象与输出流关联
     zipArchiver.pipe(output);
     for(let i=0; i < imagesArr.length; i++) {
         console.log(imagesArr[i]);
         //将被打包文件的流添加进archiver对象中
-        zipArchiver.append(fs.createReadStream(imagesArr[i]), {'name': req.body.images[i]});
+        zipArchiver.append(fs.createReadStream(imagesArr[i]), {'name': rawImages.images[i]});
     }
     //打包
     zipArchiver.finalize();
