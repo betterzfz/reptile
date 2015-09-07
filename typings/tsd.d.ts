@@ -20,3 +20,6 @@
 /// <reference path="read-chunk/read-chunk.d.ts" />
 /// <reference path="file-type/file-type.d.ts" />
 /// <reference path="image-size/image-size.d.ts" />
+/// <reference path="archiver/archiver.d.ts" />
+/// <reference path="archiver/archiver.d.ts" />
+/// <reference path="thmclrx/thmclrx.d.ts" />

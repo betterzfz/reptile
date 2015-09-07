@@ -17,6 +17,7 @@ interface ImageTask{
     width: number;
     heightType: string;
     height: number;
+    color: string;
 }
 
 //分类任务接口
@@ -28,6 +29,7 @@ interface CategoryTask{
     width?: number;
     heightType?: string;
     height?: number;
+    color?: string;
 }
 
 global.imgPool = new PromisePool.Pool(function(imgTask: ImageTask, index: number) {
@@ -82,8 +84,8 @@ class Category {
                                 widthType: categoryTask.widthType,
                                 width: categoryTask.width,
                                 heightType: categoryTask.heightType,
-                                height: categoryTask.height
-                                
+                                height: categoryTask.height,
+                                color: categoryTask.color
                             });
                         }
     

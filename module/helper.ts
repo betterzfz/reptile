@@ -5,6 +5,7 @@ import * as bluebird from 'bluebird';
 import * as readChunk from 'read-chunk'; 
 import * as fileType from 'file-type';
 import * as sizeOf from 'image-size';
+import * as thmclrx from 'thmclrx';
 import Image from '../models/image';
 
 // 图片任务接口
@@ -17,6 +18,7 @@ interface ImageTask{
     width: number;
     heightType: string;
     height: number;
+    color: string;
 }
 
 class Helper {
@@ -59,14 +61,18 @@ class Helper {
                     return result && (result.ext == 'jpg' || result.ext == 'png' || result.ext == 'gif');
                     
                 }
-                console.log('文件不存在');
+                //console.log('文件不存在');
             })
             .then(function (isValidImgResult: boolean) {
                 if (isValidImgResult) {
                     return that.isValidSize(tmp_filename, task);
                 }
-                console.log('文件不是一个合法的图片文件');
+                //console.log('文件不是一个合法的图片文件');
             });
+            /*.then(function () {
+                return that.isValidColor(tmp_filename, task);
+                
+            });*/
     };
     
     isValidSize(file: string, task: ImageTask) {
@@ -234,6 +240,58 @@ class Helper {
                 }
                 
             });
+            
+            
+        })
+    };
+    
+    isValidColor(file: string, task: ImageTask) {
+        let that = this;
+    
+        return new bluebird(function (resolve, reject) {
+            
+            if (task.color != '0') {
+                
+                let taskColorR: number = parseInt(task.color.substr(1,2), 16);
+                let taskColorG: number = parseInt(task.color.substr(3,2), 16);
+                let taskColorB: number = parseInt(task.color.substr(5,2), 16);
+                
+                thmclrx.octreeGet(file, 6, function(err, result) {
+                    console.log('thm')
+                    if(err) {
+                        return resolve(err.message);
+                    }
+                    
+                    let colorFlag: number = 0;
+                    
+                    let tagcolor: string = result[0].color.toLowerCase();
+                    let colorR: number = parseInt(tagcolor.substr(0,2), 16);
+                    let colorG: number = parseInt(tagcolor.substr(2,2), 16);
+                    let colorB: number = parseInt(tagcolor.substr(4,2), 16);
+                    let diffValue: number = Math.abs(colorR - taskColorR) + Math.abs(colorG - taskColorG) + Math.abs(colorB - taskColorB);
+                    console.log(tagcolor);
+                    console.log(colorR);
+                    console.log(colorG);
+                    console.log(colorB);
+                    console.log(diffValue);
+                    if (diffValue < 800) {
+                        colorFlag = 1;
+                    }
+                    console.log(colorFlag);
+                    if (colorFlag == 1) {
+                        return resolve(true);
+                    } else {
+                        fs.unlinkSync(file);
+                        return reject('图片色调不搭配');
+                    }
+                    
+                    
+                    
+                })
+                console.log('ok');
+            } else {
+                return resolve(true);
+            }
             
             
         })

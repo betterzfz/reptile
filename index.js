@@ -50,6 +50,7 @@ app.get('/start', function (req, res) {
 });
 app.get('/reptile', function (req, res) {
     var io = socket(server);
+    console.log(req.query.colorpicker);
     if (req.query.type == 0) {
         var page = new page_1["default"]();
         var pool = new promisePool.Pool(function (pageTask, index) {
@@ -72,7 +73,8 @@ app.get('/reptile', function (req, res) {
             widthType: req.query.widthType,
             width: req.query.width ? req.query.width : 0,
             heightType: req.query.heightType,
-            height: req.query.height ? req.query.height : 0
+            height: req.query.height ? req.query.height : 0,
+            color: req.query.colorpicker ? req.query.colorpicker : '0'
         };
         pool.add(pageTask);
         io.on('connection', function (socket) {
@@ -135,7 +137,8 @@ app.get('/reptile', function (req, res) {
             widthType: req.query.widthType,
             width: req.query.width ? req.query.width : 0,
             heightType: req.query.heightType,
-            height: req.query.height ? req.query.height : 0
+            height: req.query.height ? req.query.height : 0,
+            color: req.query.colorpicker ? req.query.colorpicker : '0'
         };
         category.getCategoty(categoryTask);
         io.on('connection', function (socket) {

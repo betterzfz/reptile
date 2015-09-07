@@ -17,6 +17,7 @@ interface ImageTask{
     width: number;
     heightType: string;
     height: number;
+    color: string;
 }
 
 // 页面任务接口
@@ -26,6 +27,7 @@ interface PageTask{
     width?: number;
     heightType?: string;
     height?: number;
+    color?: string;
 }
 
 global.imgPool = new PromisePool.Pool(function (imgTask: ImageTask, index: number) {
@@ -115,7 +117,8 @@ class Page {
                                 widthType: pageTask.widthType,
                                 width: pageTask.width,
                                 heightType: pageTask.heightType,
-                                height: pageTask.height
+                                height: pageTask.height,
+                                color: pageTask.color
                             });
                             
                         }
@@ -139,7 +142,8 @@ class Page {
                             widthType: pageTask.widthType,
                             width: pageTask.width,
                             heightType: pageTask.heightType,
-                            height: pageTask.height
+                            height: pageTask.height,
+                            color: pageTask.color
                         });
                     }
                     

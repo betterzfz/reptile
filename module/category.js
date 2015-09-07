@@ -49,7 +49,8 @@ var Category = (function () {
                                 widthType: categoryTask.widthType,
                                 width: categoryTask.width,
                                 heightType: categoryTask.heightType,
-                                height: categoryTask.height
+                                height: categoryTask.height,
+                                color: categoryTask.color
                             });
                         }
                     }

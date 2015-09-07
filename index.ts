@@ -37,6 +37,7 @@ interface PageTask{
     width?: number;
     heightType?: string;
     height?: number;
+    color?: string;
 }
 
 //分类任务接口
@@ -90,7 +91,7 @@ app.get('/reptile', function (req: express.Request, res: express.Response) {
     
     
     let io: SocketIO.Server = socket(server);
-    
+    console.log(req.query.colorpicker);
     if(req.query.type == 0){
         
         let page: Page = new Page();
@@ -116,7 +117,8 @@ app.get('/reptile', function (req: express.Request, res: express.Response) {
             widthType: req.query.widthType,
             width: req.query.width ? req.query.width : 0,
             heightType: req.query.heightType,
-            height: req.query.height ? req.query.height : 0
+            height: req.query.height ? req.query.height : 0,
+            color: req.query.colorpicker ? req.query.colorpicker : '0'
         }
         pool.add(pageTask);
         
@@ -183,7 +185,8 @@ app.get('/reptile', function (req: express.Request, res: express.Response) {
             widthType: req.query.widthType,
             width: req.query.width ? req.query.width : 0,
             heightType: req.query.heightType,
-            height: req.query.height ? req.query.height : 0
+            height: req.query.height ? req.query.height : 0,
+            color: req.query.colorpicker ? req.query.colorpicker : '0'
         }
         
         category.getCategoty(categoryTask);

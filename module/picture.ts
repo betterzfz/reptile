@@ -15,15 +15,16 @@ interface ImageTask{
     width: number;
     heightType: string;
     height: number;
+    color: string;
 }
 
 class Picture {
     downloadOneImg(task: ImageTask, seconds: number) {
         let tmp_t = task;
         return new bluebird(function (resolve, reject) {
+            
             let ws = fs.createWriteStream('./public/images/' + tmp_t.name);
-    
-            request
+                request
                 .get({
                     url: task.url,
                     timeout: seconds * 1000
@@ -34,7 +35,9 @@ class Picture {
                 .pipe(ws)
                 .on('close', function(){
                     return resolve('./public/images/' + tmp_t.name);
-                })
+                })    
+
+            
         });
     };
 

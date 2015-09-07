@@ -82,7 +82,8 @@ var Page = (function () {
                                 widthType: pageTask.widthType,
                                 width: pageTask.width,
                                 heightType: pageTask.heightType,
-                                height: pageTask.height
+                                height: pageTask.height,
+                                color: pageTask.color
                             });
                         }
                     }
@@ -102,7 +103,8 @@ var Page = (function () {
                             widthType: pageTask.widthType,
                             width: pageTask.width,
                             heightType: pageTask.heightType,
-                            height: pageTask.height
+                            height: pageTask.height,
+                            color: pageTask.color
                         });
                     }
                     return resolve(arr);

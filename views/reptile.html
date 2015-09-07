@@ -56,13 +56,13 @@
         $('#fulfilled').html(data.fulfilled);
         $('#rejected').html(data.rejected);
         $('#pending').html(data.pending);
-        $('#avg-speed').html(data.fulfilled/time);
+        $('#avg-speed').html(Math.round(data.fulfilled/time));
         $('#total').html(data.total);
         
         $('#img-fulfilled').html(data.imgFulfilled);
         $('#img-rejected').html(data.imgRejected);
         $('#img-pending').html(data.imgPending);
-        $('#img-avg-speed').html(data.imgFulfilled/time);
+        $('#img-avg-speed').html(Math.round(data.imgFulfilled/time));
         $('#img-total').html(data.imgTotal);
     });
     

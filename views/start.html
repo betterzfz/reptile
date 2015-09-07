@@ -3,6 +3,7 @@
 {% block head %}
     {% parent %}
     <link href="./css/start.css" rel="stylesheet">
+    <link href="./css/jquery.simplecolorpicker.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -53,6 +54,28 @@
                     <input type="number" class="form-control" name="height" id="height" placeholder="图片高度(px)">
                 </div>
             </div>
+            <div class="form-group">
+                <label for="colorpicker" class="col-sm-2 control-label">色调</label>
+                <div class="col-sm-10">
+                    <select class="form-control" name="colorpicker" id="colorpicker">
+                        <option value="0">无</option>
+                        <option value="#7bd148">Green</option>
+                        <option value="#5484ed">Bold blue</option>
+                        <option value="#a4bdfc">Blue</option>
+                        <option value="#46d6db">Turquoise</option>
+                        <option value="#7ae7bf">Light green</option>
+                        <option value="#51b749">Bold green</option>
+                        <option value="#fbd75b">Yellow</option>
+                        <option value="#ffb878">Orange</option>
+                        <option value="#ff887c">Red</option>
+                        <option value="#dc2127">Bold red</option>
+                        <option value="#dbadff">Purple</option>
+                        <option value="#e1e1e1">Gray</option>
+                        <option value="#ffffff">white</option>
+                        <option value="#000000">black</option>
+                    </select>
+                </div>
+            </div>
             <div class="form-group" id="num" style="display:none;">
                 <label for="num" class="col-sm-2 control-label">数量</label>
                 <div class="col-sm-10">
@@ -79,5 +102,6 @@
 
 {% block foot %}
     {% parent %}
+    <script src="./js/jquery.simplecolorpicker.js"></script>
     <script src="./js/start.js"></script>
 {% endblock %}
