@@ -7,6 +7,7 @@ let imageSchema: mongoose.Schema = new Schema({
 	title : String,
 	name : String,
 	source : String,
+	origin : String,
 	create_date : {type: Date, default: Date.now}
 });
 

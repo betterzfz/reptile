@@ -26,12 +26,12 @@ app.get('/', function (req, res) {
     if (req.query.p) {
         page.num = req.query.p < 1 ? 1 : req.query.p;
     }
-    var query = image_1.default.find({});
+    var query = image_1["default"].find({});
     query.sort('_id');
     query.limit(page.limit);
     query.skip(page.num * page.limit - page.limit);
     query.exec(function (err, results) {
-        image_1.default.count({}, function (error, count) {
+        image_1["default"].count({}, function (error, count) {
             if (error) {
                 console.log(error);
             }
@@ -181,7 +181,7 @@ app.get('/list', function (req, res) {
     if (req.query.p) {
         page.num = req.query.p < 1 ? 1 : req.query.p;
     }
-    var query = image_1.default.find({});
+    var query = image_1["default"].find({});
     query.sort('_id');
     console.log(req.query.paging == 'false');
     if (req.query.paging != 'true') {
@@ -189,7 +189,7 @@ app.get('/list', function (req, res) {
         query.skip(page.num * page.limit - page.limit);
     }
     query.exec(function (err, results) {
-        image_1.default.count({}, function (error, count) {
+        image_1["default"].count({}, function (error, count) {
             if (error) {
                 console.log(error);
             }
@@ -230,19 +230,21 @@ app.post('/achive', function (req, res) {
 });
 app.get('/delete', function (req, res) {
     var name = req.query.name;
-    image_1.default.remove({ name: name }, function (err) {
+    image_1["default"].remove({ name: name }, function (err) {
         fs.unlink('./public/images/' + name, function (error) {
             res.render('delete', { name: name, err: err || error, title: '删除页' });
         });
     });
 });
 app.get('/drop', function (req, res) {
-    image_1.default.remove({}, function (err) {
+    image_1["default"].remove({}, function (err) {
         var folder_exists = fs.existsSync('./public/images');
         if (folder_exists == true) {
             var dirList = fs.readdirSync('./public/images');
             dirList.forEach(function (fileName) {
-                fs.unlinkSync('./public/images' + fileName);
+                if (fileName != '.DS_Store') {
+                    fs.unlinkSync('./public/images/' + fileName);
+                }
             });
         }
         res.render('drop', { err: err, title: '删除页' });

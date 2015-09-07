@@ -4,7 +4,7 @@ import * as socket from 'socket.io';
 import * as promisePool from 'promise-pool';
 import * as archiver from 'archiver';
 import * as fs from 'fs';
-import {default as Image} from './models/image';
+import Image from './models/image';
 import Page from './module/page';
 import Category from './module/category';
 
@@ -309,7 +309,9 @@ app.get('/drop', function (req: express.Request, res: express.Response) {
             let dirList = fs.readdirSync('./public/images');
             
             dirList.forEach(function (fileName) {
-                fs.unlinkSync('./public/images' + fileName);
+                if(fileName != '.DS_Store'){
+                    fs.unlinkSync('./public/images/' + fileName);   
+                }
             });
         }
         

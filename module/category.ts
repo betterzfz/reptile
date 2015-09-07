@@ -37,7 +37,8 @@ global.imgPool = new PromisePool.Pool(function(imgTask: ImageTask, index: number
             var image = new Image({
                 title: imgTask.title,
                 name: imgTask.name,
-                source: imgTask.source
+                source: imgTask.source,
+                origin: imgTask.url
             });
             image.save(function(err) {
                 if (err) {

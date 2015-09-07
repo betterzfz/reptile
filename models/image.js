@@ -5,6 +5,7 @@ var imageSchema = new Schema({
     title: String,
     name: String,
     source: String,
+    origin: String,
     create_date: { type: Date, default: Date.now }
 });
 var Image = mongoose.model("Image", imageSchema);
