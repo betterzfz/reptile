@@ -4,7 +4,6 @@ var bluebird = require('bluebird');
 var readChunk = require('read-chunk');
 var fileType = require('file-type');
 var sizeOf = require('image-size');
-var thmclrx = require('thmclrx');
 var image_1 = require('../models/image');
 var Helper = (function () {
     function Helper() {
@@ -231,43 +230,49 @@ var Helper = (function () {
     Helper.prototype.isValidColor = function (file, task) {
         var that = this;
         return new bluebird(function (resolve, reject) {
-            if (task.color != '0') {
-                var taskColorR = parseInt(task.color.substr(1, 2), 16);
-                var taskColorG = parseInt(task.color.substr(3, 2), 16);
-                var taskColorB = parseInt(task.color.substr(5, 2), 16);
-                thmclrx.octreeGet(file, 6, function (err, result) {
-                    console.log('thm');
-                    if (err) {
-                        return resolve(err.message);
-                    }
-                    var colorFlag = 0;
-                    var tagcolor = result[0].color.toLowerCase();
-                    var colorR = parseInt(tagcolor.substr(0, 2), 16);
-                    var colorG = parseInt(tagcolor.substr(2, 2), 16);
-                    var colorB = parseInt(tagcolor.substr(4, 2), 16);
-                    var diffValue = Math.abs(colorR - taskColorR) + Math.abs(colorG - taskColorG) + Math.abs(colorB - taskColorB);
-                    console.log(tagcolor);
-                    console.log(colorR);
-                    console.log(colorG);
-                    console.log(colorB);
-                    console.log(diffValue);
-                    if (diffValue < 800) {
-                        colorFlag = 1;
-                    }
-                    console.log(colorFlag);
-                    if (colorFlag == 1) {
-                        return resolve(true);
-                    }
-                    else {
-                        fs.unlinkSync(file);
-                        return reject('图片色调不搭配');
-                    }
-                });
-                console.log('ok');
-            }
-            else {
-                return resolve(true);
-            }
+            /*if (task.color != '0') {
+                
+                        let taskColorR: number = parseInt(task.color.substr(1,2), 16);
+                        let taskColorG: number = parseInt(task.color.substr(3,2), 16);
+                        let taskColorB: number = parseInt(task.color.substr(5,2), 16);
+                        thmclrx.cleanPool();
+                        thmclrx.octreeGet(file, 6, function(err, result) {
+                            console.log('thm')
+                            if(err) {
+                                console.log(err.message);
+                                return false;
+                            }
+                            
+                            let colorFlag: number = 0;
+                            
+                            let tagcolor: string = result[0].color.toLowerCase();
+                            let colorR: number = parseInt(tagcolor.substr(0,2), 16);
+                            let colorG: number = parseInt(tagcolor.substr(2,2), 16);
+                            let colorB: number = parseInt(tagcolor.substr(4,2), 16);
+                            let diffValue: number = Math.abs(colorR - taskColorR) + Math.abs(colorG - taskColorG) + Math.abs(colorB - taskColorB);
+                            console.log(tagcolor);
+                            console.log(colorR);
+                            console.log(colorG);
+                            console.log(colorB);
+                            console.log(diffValue);
+                            if (diffValue < 800) {
+                                colorFlag = 1;
+                            }
+                            console.log(colorFlag);
+                            if (colorFlag == 1) {
+                                return true;
+                            } else {
+                                fs.unlinkSync(file);
+                                return false;
+                            }
+                            
+                            
+                            
+                        })
+                        console.log('ok');
+                    } else {
+                        return true;
+                    }*/
         });
     };
     ;

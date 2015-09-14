@@ -4,4 +4,5 @@ declare module "thmclrx" {
 	export class thmclrx {
 	}
 	export function octreeGet(file: string, maxColors?: number, callback?: any, frameNumber?: number): any;
+	export function cleanPool(): any;
 }

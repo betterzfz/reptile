@@ -83,7 +83,7 @@ class Helper {
             sizeOf(file, function (err, dimensions) { //过滤图片大小
                 if (err) console.log(err);
                 
-                let imgArrFlag: number = 0; // 图片是否满足大小需求
+                let imgArrFlag = 0; // 图片是否满足大小需求
                 
                 switch (task.widthType) {
                     case '>=':
@@ -250,48 +250,49 @@ class Helper {
     
         return new bluebird(function (resolve, reject) {
             
-            if (task.color != '0') {
+            /*if (task.color != '0') {
                 
-                let taskColorR: number = parseInt(task.color.substr(1,2), 16);
-                let taskColorG: number = parseInt(task.color.substr(3,2), 16);
-                let taskColorB: number = parseInt(task.color.substr(5,2), 16);
-                
-                thmclrx.octreeGet(file, 6, function(err, result) {
-                    console.log('thm')
-                    if(err) {
-                        return resolve(err.message);
-                    }
-                    
-                    let colorFlag: number = 0;
-                    
-                    let tagcolor: string = result[0].color.toLowerCase();
-                    let colorR: number = parseInt(tagcolor.substr(0,2), 16);
-                    let colorG: number = parseInt(tagcolor.substr(2,2), 16);
-                    let colorB: number = parseInt(tagcolor.substr(4,2), 16);
-                    let diffValue: number = Math.abs(colorR - taskColorR) + Math.abs(colorG - taskColorG) + Math.abs(colorB - taskColorB);
-                    console.log(tagcolor);
-                    console.log(colorR);
-                    console.log(colorG);
-                    console.log(colorB);
-                    console.log(diffValue);
-                    if (diffValue < 800) {
-                        colorFlag = 1;
-                    }
-                    console.log(colorFlag);
-                    if (colorFlag == 1) {
-                        return resolve(true);
+                        let taskColorR: number = parseInt(task.color.substr(1,2), 16);
+                        let taskColorG: number = parseInt(task.color.substr(3,2), 16);
+                        let taskColorB: number = parseInt(task.color.substr(5,2), 16);
+                        thmclrx.cleanPool();
+                        thmclrx.octreeGet(file, 6, function(err, result) {
+                            console.log('thm')
+                            if(err) {
+                                console.log(err.message);
+                                return false;
+                            }
+                            
+                            let colorFlag: number = 0;
+                            
+                            let tagcolor: string = result[0].color.toLowerCase();
+                            let colorR: number = parseInt(tagcolor.substr(0,2), 16);
+                            let colorG: number = parseInt(tagcolor.substr(2,2), 16);
+                            let colorB: number = parseInt(tagcolor.substr(4,2), 16);
+                            let diffValue: number = Math.abs(colorR - taskColorR) + Math.abs(colorG - taskColorG) + Math.abs(colorB - taskColorB);
+                            console.log(tagcolor);
+                            console.log(colorR);
+                            console.log(colorG);
+                            console.log(colorB);
+                            console.log(diffValue);
+                            if (diffValue < 800) {
+                                colorFlag = 1;
+                            }
+                            console.log(colorFlag);
+                            if (colorFlag == 1) {
+                                return true;
+                            } else {
+                                fs.unlinkSync(file);
+                                return false;
+                            }
+                            
+                            
+                            
+                        })
+                        console.log('ok');
                     } else {
-                        fs.unlinkSync(file);
-                        return reject('图片色调不搭配');
-                    }
-                    
-                    
-                    
-                })
-                console.log('ok');
-            } else {
-                return resolve(true);
-            }
+                        return true;
+                    }*/
             
             
         })
